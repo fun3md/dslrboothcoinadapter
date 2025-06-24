@@ -1,0 +1,88 @@
+#include <Keyboard.h>
+
+const int coin2EuroPin = 2;
+const int coin1EuroPin = 3;
+const int coin50CentPin = 4;
+const int buttonPin = 10;
+const int inhibitCoin = 5;
+
+
+float totalCredit = 0;
+bool inhibit2E = false;
+bool inhibit1E = false;
+bool lastButtonState = HIGH;
+void setup() {
+  pinMode(coin2EuroPin, INPUT_PULLUP);
+  pinMode(coin1EuroPin, INPUT_PULLUP);
+  pinMode(coin50CentPin, INPUT_PULLUP);
+  pinMode(buttonPin, INPUT_PULLUP);
+  pinMode(inhibitCoin, OUTPUT);
+  digitalWrite(inhibitCoin, LOW);
+  Serial.begin(9600);
+  Keyboard.begin();
+}
+
+void loop() {
+  // put your main code here, to run repeatedly:
+  //Coin detection
+  if (digitalRead(coin2EuroPin) == LOW && inhibit2E==false){
+
+    Serial.println("2.00€ detected");
+    totalCredit+= 2.0;
+    Serial.println(totalCredit);
+    delay(300);
+   if(totalCredit >= 2.0)
+    {
+      pinMode(coin2EuroPin,OUTPUT);
+      digitalWrite(coin2EuroPin, LOW);
+      inhibit2E = true;
+    }
+  }
+  if (digitalRead(coin1EuroPin) == LOW && inhibit1E == false){
+    Serial.println("1.00 € detected");
+    totalCredit+= 1.0;
+    Serial.println(totalCredit);
+    delay(300);
+    if(totalCredit >= 3.0)
+    {
+      pinMode(coin1EuroPin,OUTPUT);
+      digitalWrite(coin1EuroPin, LOW);
+      inhibit1E = true;
+    }
+  }
+  if (digitalRead(coin50CentPin) == LOW){
+    Serial.println("0.50€ detected");
+    totalCredit+= 0.5;
+    Serial.println(totalCredit);
+    delay(300);
+  }  
+
+  //When Button is Pressed
+  bool currentButtonState = digitalRead(buttonPin);
+  if (totalCredit >= 4.0)
+  {
+    digitalWrite(inhibitCoin, HIGH);
+  }
+  else
+  {
+    digitalWrite(inhibitCoin, LOW);
+    pinMode(coin2EuroPin,INPUT_PULLUP);
+    pinMode(coin1EuroPin,INPUT_PULLUP);
+
+    inhibit2E = false;
+    inhibit1E = false;
+  }
+
+  if (digitalRead(buttonPin) == HIGH && currentButtonState == LOW && totalCredit >= 4.0 ){
+
+    Serial.println("Button Pressed & 4€ inserted");
+    Keyboard.press(KEY_F13);
+    delay(100);
+    Keyboard.release(KEY_F13);
+    totalCredit = 0;
+    delay(1000);
+  }
+  lastButtonState = currentButtonState;
+  //Serial.println(digitalRead(buttonPin));
+  //delay(2000);
+}
