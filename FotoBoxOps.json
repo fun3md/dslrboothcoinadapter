@@ -1,0 +1,577 @@
+{
+  "name": "FotoBoxOps",
+  "nodes": [
+    {
+      "parameters": {
+        "authentication": "basicAuth",
+        "formTitle": "Fotobox",
+        "formFields": {
+          "values": [
+            {
+              "fieldLabel": "Action",
+              "fieldType": "dropdown",
+              "fieldOptions": {
+                "values": [
+                  {
+                    "option": "StartCapture"
+                  },
+                  {
+                    "option": "Lock"
+                  },
+                  {
+                    "option": "Unlock"
+                  },
+                  {
+                    "option": "Credits - add 2€"
+                  },
+                  {
+                    "option": "Credits - add 4€"
+                  },
+                  {
+                    "option": "Credits - add 8€"
+                  },
+                  {
+                    "option": "Credits - Reset"
+                  },
+                  {
+                    "option": "set_arduino_sequence"
+                  }
+                ]
+              },
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "KonamiSequence",
+              "placeholder": "LRUDLRDULR"
+            }
+          ]
+        },
+        "responseMode": "lastNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.formTrigger",
+      "typeVersion": 2.2,
+      "position": [
+        -140,
+        0
+      ],
+      "id": "a868e781-bdf3-4865-8dbc-710044c97311",
+      "name": "On form submission",
+      "webhookId": "4aa0ca33-0b05-405c-9942-cf17c660abf2",
+      "credentials": {
+        "httpBasicAuth": {
+          "id": "GyfkuYxWQGVRnJrn",
+          "name": "Unnamed credential"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "url": "http://10.147.20.191:1500/api/start?mode=print&password=6ORo0vO24goeFw_Q",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        500,
+        -320
+      ],
+      "id": "e657c1b9-f946-4a57-baed-47d0b503d373",
+      "name": "HTTP Request"
+    },
+    {
+      "parameters": {
+        "url": "http://10.147.20.191:1500/api/lockscreen/show?password=6ORo0vO24goeFw_Q",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        500,
+        -120
+      ],
+      "id": "51c07746-0140-441d-a3e0-ff3f54767eb9",
+      "name": "HTTP Request1"
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.Action }}",
+                    "rightValue": "StartCapture",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    },
+                    "id": "efacec76-0e67-4569-93ab-f322de9c8957"
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "d52e9d8b-5682-4d42-b556-52697720bbba",
+                    "leftValue": "={{ $json.Action }}",
+                    "rightValue": "Lock",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "897170fc-6ac5-4071-b89c-12326af63e9f",
+                    "leftValue": "={{ $json.Action }}",
+                    "rightValue": "Unlock",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "b53faa3e-fffa-4899-8b49-a6df2b27c332",
+                    "leftValue": "={{ $json.Action }}",
+                    "rightValue": "Credits - add 2€",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "28f7a876-afea-452b-bc29-2bdd945a2676",
+                    "leftValue": "={{ $json.Action }}",
+                    "rightValue": "Credits - add 4€",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "cf16d50a-51e1-4164-a5fc-35c1db15639b",
+                    "leftValue": "={{ $json.Action }}",
+                    "rightValue": "Credits - add 8€",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "87c5f90b-63d5-4a9c-a458-d9819e23f243",
+                    "leftValue": "={{ $json.Action }}",
+                    "rightValue": "=Credits - Reset",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "e4cb3909-f5d0-4f95-9f58-8a89f9bfb9e7",
+                    "leftValue": "={{ $json.Action }}",
+                    "rightValue": "set_arduino_sequence",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              }
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.2,
+      "position": [
+        80,
+        0
+      ],
+      "id": "a3050641-2d67-4247-97f3-b5c485862b7f",
+      "name": "Switch"
+    },
+    {
+      "parameters": {
+        "url": "http://10.147.20.191:1500/api/lockscreen/exit?password=6ORo0vO24goeFw_Q",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        500,
+        60
+      ],
+      "id": "97b1d180-de46-47a5-a411-542935801f8f",
+      "name": "HTTP Request2"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "http://10.147.20.191:5000/arduino/reset_credit",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        580,
+        520
+      ],
+      "id": "c496b30f-740e-4fff-be18-c81dab96df14",
+      "name": "HTTP Request3"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "http://10.147.20.191:5000/arduino/set_credit",
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "credit",
+              "value": "4.00"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        800,
+        300
+      ],
+      "id": "abe4fd2f-b583-4a4e-9a73-437569dad4c5",
+      "name": "HTTP Request4"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "http://10.147.20.191:5000/arduino/set_credit",
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "credit",
+              "value": "8.00"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        800,
+        440
+      ],
+      "id": "fa2c8ff6-b90a-4fb1-884f-42d4ac5a36f8",
+      "name": "HTTP Request5"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "http://10.147.20.191:5000/arduino/set_credit",
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "credit",
+              "value": "2.00"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        800,
+        180
+      ],
+      "id": "382ce8b4-9555-41d3-938c-f2b97f61a3d8",
+      "name": "HTTP Request6"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "http://10.147.20.191:5000/arduino/set_sequence",
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "sequence",
+              "value": "={{ $json.KonamiSequence }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        340,
+        580
+      ],
+      "id": "59736241-538a-40d7-88fc-82cdb8137ff7",
+      "name": "HTTP Request7"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "http://10.147.20.191:5000/arduino/lock_count",
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "credit",
+              "value": "2.00"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        800,
+        -120
+      ],
+      "id": "0adf1145-bd05-4ae5-a4af-cc36a208242a",
+      "name": "HTTP Request8"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "http://10.147.20.191:5000/arduino/unlock_count",
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "credit",
+              "value": "2.00"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        800,
+        40
+      ],
+      "id": "b61a2953-a3b4-4a60-822f-e0a28526e80e",
+      "name": "HTTP Request9"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "On form submission": {
+      "main": [
+        [
+          {
+            "node": "Switch",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Switch": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "HTTP Request1",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "HTTP Request2",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "HTTP Request6",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "HTTP Request4",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "HTTP Request5",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "HTTP Request3",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "HTTP Request7",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request1": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request8",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request2": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request9",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "d33876e9-c748-43dc-81bb-c6331d87583a",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "5080cc0137d08d66e6285ec7bc7280d13338a12557c6949590cca82b4e04f89b"
+  },
+  "id": "rbrPGfrPE1bYPv6U",
+  "tags": []
+}
