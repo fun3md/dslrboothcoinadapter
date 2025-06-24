@@ -1,17 +1,17 @@
 // Arduino Sketch: Coin Machine Controller with Sequence, Set Credit, GPIO7 Logic & Credit Expiry
 
 // --- Pin Definitions ---
-const int coin50Pin = 3;    // Digital pin for 50 cents coin (INPUT_PULLUP)
-const int coin1EuroPin = 4;   // Digital pin for 1 Euro coin (INPUT_PULLUP)
-const int coin2EuroPin = 5;   // Digital pin for 2 Euro coin (INPUT_PULLUP)
-const int maxCreditLedPin = 6;  // Digital pin for Max Credit/Locked indicator (OUTPUT)
-const int gpios7TriggerPin = 7; // Digital pin for specific HTTP call trigger (INPUT_PULLUP)
+const int coin50Pin = 4;    // Digital pin for 50 cents coin (INPUT_PULLUP)
+const int coin1EuroPin = 3;   // Digital pin for 1 Euro coin (INPUT_PULLUP)
+const int coin2EuroPin = 2;   // Digital pin for 2 Euro coin (INPUT_PULLUP)
+const int maxCreditLedPin = 5;  // Digital pin for Max Credit/Locked indicator (OUTPUT)
+const int gpios7TriggerPin = 10; // Digital pin for specific HTTP call trigger (INPUT_PULLUP)
 
 // Directional button pins
-const int leftPin = 8;
-const int upPin = 9;
-const int rightPin = 10;
-const int downPin = 11;
+const int leftPin = 6;
+const int upPin = 7;
+const int rightPin = 8;
+const int downPin = 9;
 
 // --- Coin Values ---
 const float value50Cents = 0.50;
@@ -34,7 +34,7 @@ unsigned long lastDebounceTimeUp = 0;
 unsigned long lastDebounceTimeRight = 0;
 unsigned long lastDebounceTimeDown = 0;
 
-const unsigned long debounceDelay = 50; // milliseconds
+const unsigned long debounceDelay = 100; // milliseconds
 
 String incomingCommand = ""; // Buffer for incoming serial data
 
@@ -103,8 +103,7 @@ void loop() {
 // Function to handle individual coin inputs
 void checkCoinInput(int pin, float value, unsigned long* lastDebounceVar) {
   if (digitalRead(pin) == LOW) {
-    if (millis() - *lastDebounceVar > debounceDelay) {
-      *lastDebounceVar = millis();
+
 
       if (lockedByWindows) {
         Serial.println("DEBUG: Coin ignored - system locked by Windows.");
@@ -116,14 +115,15 @@ void checkCoinInput(int pin, float value, unsigned long* lastDebounceVar) {
       }
 
       currentCredit += value;
-      if (currentCredit > maxCreditThreshold) {
-        currentCredit = maxCreditThreshold;
-      }
+     // if (currentCredit > maxCreditThreshold) {
+     //   currentCredit = maxCreditThreshold;
+     // }
       Serial.print("DEBUG: Coin detected: "); Serial.print(value);
       Serial.print(", New Credit: "); Serial.println(currentCredit);
       sendCreditUpdate();
       updateCreditActivityTime(); // Update timer if credit is below max threshold
-    }
+      delay(300);
+    
   } else {
     *lastDebounceVar = millis();
   }
@@ -141,12 +141,12 @@ void checkGpio7Trigger() {
         Serial.println(" Euros subtracted by GPIO 7 trigger.");
         sendCreditUpdate();
         updateCreditActivityTime(); // Update timer if credit is below max threshold
+        Serial.println("GPIO7_TRIGGERED"); // Always send this for the HTTP call
       } else {
         Serial.print("DEBUG: Not enough credit ("); Serial.print(currentCredit, 2);
         Serial.print("€) to subtract "); Serial.print(creditDeductionAmount, 2);
         Serial.println("€ on GPIO 7 trigger.");
       }
-      Serial.println("GPIO7_TRIGGERED"); // Always send this for the HTTP call
     }
   } else {
     lastDebounceTimeGpio7 = millis();

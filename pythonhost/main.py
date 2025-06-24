@@ -8,15 +8,15 @@ import tkinter as tk
 from flask import Flask, request, jsonify
 
 # --- Configuration ---
-ARDUINO_PORT = 'COM3'  # *** IMPORTANT: Change this to your Arduino's COM port ***
+ARDUINO_PORT = 'COM7'  # *** IMPORTANT: Change this to your Arduino's COM port ***
 BAUD_RATE = 9600
-REMOTE_HTTP_ENDPOINT_GPIO7 = 'http://api.example.com/trigger_action_gpio7'  # Replace with your actual endpoint
-CREDIT_DISPLAY_X = 100 # X coordinate for credit overlay
-CREDIT_DISPLAY_Y = 100 # Y coordinate for credit overlay
+REMOTE_HTTP_ENDPOINT_GPIO7 = 'http://localhost:1500/api/start?mode=print&password=6ORo0vO24goeFw_Q'  # Replace with your actual endpoint
+CREDIT_DISPLAY_X = 920 # X coordinate for credit overlay
+CREDIT_DISPLAY_Y = 1030 # Y coordinate for credit overlay
 FONT_SIZE = 48
 FONT_COLOR = "lime green"
 BG_COLOR = "black"
-OVERLAY_WIDTH = 300
+OVERLAY_WIDTH = 700
 OVERLAY_HEIGHT = 80
 
 # --- Default Konami Sequence ---
@@ -33,7 +33,7 @@ root = None
 credit_label = None
 
 # --- Flask App Setup ---
-app = Flask(__Flask__)
+app = Flask("__Flask__")
 
 # --- Serial Communication Thread Function ---
 def serial_reader_thread():
@@ -56,7 +56,7 @@ def serial_reader_thread():
                     elif line == "GPIO7_TRIGGERED":
                         print(f"GPIO 7 triggered. Calling remote HTTP endpoint: {REMOTE_HTTP_ENDPOINT_GPIO7}")
                         try:
-                            response = requests.post(REMOTE_HTTP_ENDPOINT_GPIO7, json={"trigger": "GPIO7_LOW", "timestamp": time.time()})
+                            response = requests.get(REMOTE_HTTP_ENDPOINT_GPIO7)
                             print(f"Remote endpoint response: {response.status_code} - {response.text}")
                         except requests.exceptions.RequestException as e:
                             print(f"Error calling remote endpoint for GPIO7: {e}")
