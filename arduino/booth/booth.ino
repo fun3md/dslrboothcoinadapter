@@ -23,6 +23,9 @@ const float maxCreditThreshold = 4.00; // 4 Euros, also the sequence target
 // --- Global Variables ---
 float currentCredit = 0.00;
 bool lockedByWindows = false; // True if Windows has sent a LOCK_COUNT command
+bool coin50AcceptorEnabled = true;
+bool coin1EuroAcceptorEnabled = true;
+bool coin2EuroAcceptorEnabled = true;
 
 // --- Debounce Variables ---
 unsigned long lastDebounceTimeCoin50 = 0;
@@ -72,11 +75,53 @@ void setup() {
   sendCreditUpdate(); // Send initial credit
 }
 
+void manageCoinAcceptors() {
+  // --- 2 Euro Coin ---
+  bool shouldEnable2Euro = !lockedByWindows && (currentCredit + value2Euro <= maxCreditThreshold);
+  if (shouldEnable2Euro && !coin2EuroAcceptorEnabled) {
+    pinMode(coin2EuroPin, INPUT_PULLUP);
+    coin2EuroAcceptorEnabled = true;
+    Serial.println("DEBUG: 2 Euro acceptor enabled.");
+  } else if (!shouldEnable2Euro && coin2EuroAcceptorEnabled) {
+    pinMode(coin2EuroPin, OUTPUT);
+    digitalWrite(coin2EuroPin, LOW);
+    coin2EuroAcceptorEnabled = false;
+    Serial.println("DEBUG: 2 Euro acceptor disabled.");
+  }
+
+  // --- 1 Euro Coin ---
+  bool shouldEnable1Euro = !lockedByWindows && (currentCredit + value1Euro <= maxCreditThreshold);
+  if (shouldEnable1Euro && !coin1EuroAcceptorEnabled) {
+    pinMode(coin1EuroPin, INPUT_PULLUP);
+    coin1EuroAcceptorEnabled = true;
+    Serial.println("DEBUG: 1 Euro acceptor enabled.");
+  } else if (!shouldEnable1Euro && coin1EuroAcceptorEnabled) {
+    pinMode(coin1EuroPin, OUTPUT);
+    digitalWrite(coin1EuroPin, LOW);
+    coin1EuroAcceptorEnabled = false;
+    Serial.println("DEBUG: 1 Euro acceptor disabled.");
+  }
+
+  // --- 50 Cents Coin ---
+  bool shouldEnable50Cents = !lockedByWindows && (currentCredit + value50Cents <= maxCreditThreshold);
+  if (shouldEnable50Cents && !coin50AcceptorEnabled) {
+    pinMode(coin50Pin, INPUT_PULLUP);
+    coin50AcceptorEnabled = true;
+    Serial.println("DEBUG: 50 Cents acceptor enabled.");
+  } else if (!shouldEnable50Cents && coin50AcceptorEnabled) {
+    pinMode(coin50Pin, OUTPUT);
+    digitalWrite(coin50Pin, LOW);
+    coin50AcceptorEnabled = false;
+    Serial.println("DEBUG: 50 Cents acceptor disabled.");
+  }
+}
+
 void loop() {
+  manageCoinAcceptors();
   // --- Check Coin Inputs ---
-  checkCoinInput(coin50Pin, value50Cents, &lastDebounceTimeCoin50);
-  checkCoinInput(coin1EuroPin, value1Euro, &lastDebounceTimeCoin1Euro);
-  checkCoinInput(coin2EuroPin, value2Euro, &lastDebounceTimeCoin2Euro);
+  checkCoinInput(coin50Pin, value50Cents, &lastDebounceTimeCoin50, coin50AcceptorEnabled);
+  checkCoinInput(coin1EuroPin, value1Euro, &lastDebounceTimeCoin1Euro, coin1EuroAcceptorEnabled);
+  checkCoinInput(coin2EuroPin, value2Euro, &lastDebounceTimeCoin2Euro, coin2EuroAcceptorEnabled);
 
   // --- Check GPIO 7 Trigger Input (with credit deduction) ---
   checkGpio7Trigger();
@@ -101,19 +146,11 @@ void loop() {
 }
 
 // Function to handle individual coin inputs
-void checkCoinInput(int pin, float value, unsigned long* lastDebounceVar) {
+void checkCoinInput(int pin, float value, unsigned long* lastDebounceVar, bool isEnabled) {
+  if (!isEnabled) {
+    return;
+  }
   if (digitalRead(pin) == LOW) {
-
-
-      if (lockedByWindows) {
-        Serial.println("DEBUG: Coin ignored - system locked by Windows.");
-        return;
-      }
-      if (currentCredit >= maxCreditThreshold) {
-        Serial.println("DEBUG: Coin ignored - max credit reached.");
-        return;
-      }
-
       currentCredit += value;
      // if (currentCredit > maxCreditThreshold) {
      //   currentCredit = maxCreditThreshold;
